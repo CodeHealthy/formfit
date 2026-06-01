@@ -1,12 +1,25 @@
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly configService: ConfigService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getRoot() {
+    return {
+      message: 'FormFit API is running',
+      environment: this.configService.get<string>('NODE_ENV'),
+    };
+  }
+
+  @Get('health')
+  getHealth() {
+    return {
+      status: 'ok',
+      service: 'formfit-backend',
+      environment: this.configService.get<string>('NODE_ENV'),
+      timestamp: new Date().toISOString(),
+    };
   }
 }
