@@ -1,40 +1,24 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { BillingModule } from './billing/billing.module';
+import { validateEnv } from './config/env.validation';
+import { DatabaseModule } from './database/database.module';
+import { HealthModule } from './health/health.module';
+import { PresetsModule } from './presets/presets.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      validate: validateEnv,
     }),
-
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const uri = configService.get<string>('MONGODB_URI');
-        const dbName = configService.get<string>('MONGODB_DB_NAME');
-
-        if (!uri) {
-          throw new Error('MONGODB_URI is missing from environment variables');
-        }
-
-        if (!dbName) {
-          throw new Error('MONGODB_DB_NAME is missing from environment variables');
-        }
-
-        return {
-          uri,
-          dbName,
-        };
-      },
-    }),
+    DatabaseModule,
+    HealthModule,
+    PresetsModule,
+    BillingModule,
+    AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

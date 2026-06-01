@@ -1,0 +1,48 @@
+import { FilePreset } from '../types/preset.types';
+
+export const DEFAULT_FILE_PRESETS: FilePreset[] = [
+  {
+    id: 'passport-photo-600-200',
+    name: 'Passport Photo',
+    description: 'JPG photo, 600x600 pixels, under 200KB.',
+    category: 'photo',
+    outputFormat: 'jpeg',
+    width: 600,
+    height: 600,
+    maxSizeKB: 200,
+    isPremium: false,
+  },
+  {
+    id: 'profile-photo-400-100',
+    name: 'Profile Picture',
+    description: 'JPG profile image, 400x400 pixels, under 100KB.',
+    category: 'photo',
+    outputFormat: 'jpeg',
+    width: 400,
+    height: 400,
+    maxSizeKB: 100,
+    isPremium: false,
+  },
+  {
+    id: 'signature-300-50',
+    name: 'Signature Upload',
+    description: 'PNG signature image, 300x100 pixels, under 50KB.',
+    category: 'signature',
+    outputFormat: 'png',
+    width: 300,
+    height: 100,
+    maxSizeKB: 50,
+    isPremium: false,
+  },
+  {
+    id: 'document-image-1000-500',
+    name: 'Document Image',
+    description: 'JPG document image, 1000x1000 pixels, under 500KB.',
+    category: 'document',
+    outputFormat: 'jpeg',
+    width: 1000,
+    height: 1000,
+    maxSizeKB: 500,
+    isPremium: false,
+  },
+];
