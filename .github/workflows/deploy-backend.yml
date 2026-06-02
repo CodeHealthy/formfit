@@ -24,8 +24,8 @@ jobs:
         working-directory: backend
 
     env:
-      NODE_ENV: production
-      PORT: 5000
+      NODE_ENV: test
+      PORT: ${{ secrets.PORT || 5000 }}
       FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       MONGODB_DB_NAME: ${{ secrets.MONGODB_DB_NAME }}
@@ -75,7 +75,7 @@ jobs:
         uses: appleboy/ssh-action@v1.2.0
         env:
           NODE_ENV: production
-          PORT: 5000
+          PORT: ${{ secrets.PORT || 5000 }}
           FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           MONGODB_DB_NAME: ${{ secrets.MONGODB_DB_NAME }}
