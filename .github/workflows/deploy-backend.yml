@@ -111,13 +111,6 @@ jobs:
             JWT_EXPIRES_IN=$JWT_EXPIRES_IN
             BCRYPT_SALT_ROUNDS=$BCRYPT_SALT_ROUNDS
             EOF
-            if ! command -v npm >/dev/null 2>&1; then
-              curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-              sudo apt-get install -y nodejs
-            fi
             npm ci --omit=dev
-            if ! command -v pm2 >/dev/null 2>&1; then
-              npm install -g pm2
-            fi
             pm2 startOrReload ecosystem.config.cjs --env production
             pm2 save
