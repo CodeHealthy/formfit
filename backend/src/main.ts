@@ -13,11 +13,18 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   const port = configService.getOrThrow<number>('PORT');
-  const frontendUrl = configService.getOrThrow<string>('FRONTEND_URL');
+
+  const frontendUrls = configService
+    .getOrThrow<string>('FRONTEND_URLS')
+    .split(',')
+    .map((url) => url.trim().replace(/\/$/, ''))
+    .filter(Boolean);
 
   app.enableCors({
-    origin: frontendUrl,
+    origin: frontendUrls,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   app.useGlobalPipes(
@@ -28,7 +35,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
 
   console.log(`${APP_NAME} API is running on port ${port}`);
 }
