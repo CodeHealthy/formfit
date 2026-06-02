@@ -21,6 +21,10 @@ export type ImageFixOptions = {
   height: number;
   maxSizeKB: number;
   outputFormat: OutputImageFormat;
+  fitMode: 'cover' | 'contain';
+  cropPosition: 'center' | 'top' | 'bottom' | 'left' | 'right';
+  background: 'white' | 'transparent';
+  filename: string;
 };
 
 export type ProcessedImageResult = {
@@ -30,4 +34,5 @@ export type ProcessedImageResult = {
   width: number;
   height: number;
   format: OutputImageFormat;
+  targetReached: boolean;
 };

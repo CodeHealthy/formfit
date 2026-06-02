@@ -1,0 +1,28 @@
+import Link from 'next/link';
+
+import { PdfTool } from '@/features/pdf-tools/components/pdf-tool';
+
+export default function ImageToPdfPage() {
+  return (
+    <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
+      <div className="mx-auto max-w-6xl">
+        <ToolHeader title="Image to PDF" />
+        <PdfTool mode="image-to-pdf" />
+      </div>
+    </main>
+  );
+}
+
+function ToolHeader({ title }: { title: string }) {
+  return (
+    <div className="mb-10">
+      <Link href="/" className="text-sm text-blue-400 hover:text-blue-300">
+        Back home
+      </Link>
+      <p className="mt-6 mb-3 text-sm font-medium uppercase tracking-widest text-blue-400">
+        FormFit Tool
+      </p>
+      <h1 className="text-4xl font-bold tracking-tight">{title}</h1>
+    </div>
+  );
+}

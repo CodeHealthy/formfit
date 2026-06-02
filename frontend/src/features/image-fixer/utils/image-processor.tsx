@@ -9,15 +9,21 @@ function getMimeType(format: OutputImageFormat) {
 }
 
 function getFileExtension(format: OutputImageFormat) {
-  if (format === 'jpeg') {
-    return 'jpg';
-  }
-
-  return format;
+  return format === 'jpeg' ? 'jpg' : format;
 }
 
 function getFileSizeKB(file: Blob) {
   return Math.round(file.size / 1024);
+}
+
+function sanitizeFilename(filename: string, fallback: string) {
+  const sanitized = filename
+    .trim()
+    .replace(/[^a-zA-Z0-9-_ ]/g, '')
+    .replace(/\s+/g, '-')
+    .toLowerCase();
+
+  return sanitized || fallback;
 }
 
 function createImageFromFile(file: File): Promise<HTMLImageElement> {
@@ -65,6 +71,7 @@ function drawImageCover(
   image: HTMLImageElement,
   targetWidth: number,
   targetHeight: number,
+  cropPosition: ImageFixOptions['cropPosition'],
 ) {
   const sourceRatio = image.width / image.height;
   const targetRatio = targetWidth / targetHeight;
@@ -76,10 +83,24 @@ function drawImageCover(
 
   if (sourceRatio > targetRatio) {
     sourceWidth = image.height * targetRatio;
-    sourceX = (image.width - sourceWidth) / 2;
+
+    if (cropPosition === 'left') {
+      sourceX = 0;
+    } else if (cropPosition === 'right') {
+      sourceX = image.width - sourceWidth;
+    } else {
+      sourceX = (image.width - sourceWidth) / 2;
+    }
   } else {
     sourceHeight = image.width / targetRatio;
-    sourceY = (image.height - sourceHeight) / 2;
+
+    if (cropPosition === 'top') {
+      sourceY = 0;
+    } else if (cropPosition === 'bottom') {
+      sourceY = image.height - sourceHeight;
+    } else {
+      sourceY = (image.height - sourceHeight) / 2;
+    }
   }
 
   context.drawImage(
@@ -93,6 +114,21 @@ function drawImageCover(
     targetWidth,
     targetHeight,
   );
+}
+
+function drawImageContain(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  targetWidth: number,
+  targetHeight: number,
+) {
+  const scale = Math.min(targetWidth / image.width, targetHeight / image.height);
+  const drawWidth = image.width * scale;
+  const drawHeight = image.height * scale;
+  const drawX = (targetWidth - drawWidth) / 2;
+  const drawY = (targetHeight - drawHeight) / 2;
+
+  context.drawImage(image, drawX, drawY, drawWidth, drawHeight);
 }
 
 export async function processImageFile(
@@ -111,10 +147,24 @@ export async function processImageFile(
     throw new Error('Canvas is not supported in this browser');
   }
 
-  context.fillStyle = '#ffffff';
-  context.fillRect(0, 0, options.width, options.height);
+  if (options.background === 'white' || options.outputFormat === 'jpeg') {
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, options.width, options.height);
+  } else {
+    context.clearRect(0, 0, options.width, options.height);
+  }
 
-  drawImageCover(context, image, options.width, options.height);
+  if (options.fitMode === 'contain') {
+    drawImageContain(context, image, options.width, options.height);
+  } else {
+    drawImageCover(
+      context,
+      image,
+      options.width,
+      options.height,
+      options.cropPosition,
+    );
+  }
 
   const mimeType = getMimeType(options.outputFormat);
 
@@ -127,10 +177,14 @@ export async function processImageFile(
   }
 
   const extension = getFileExtension(options.outputFormat);
-
-  const processedFile = new File([blob], `formfit-result.${extension}`, {
-    type: mimeType,
-  });
+  const targetReached = getFileSizeKB(blob) <= options.maxSizeKB;
+  const processedFile = new File(
+    [blob],
+    `${sanitizeFilename(options.filename, 'formfit-result')}.${extension}`,
+    {
+      type: mimeType,
+    },
+  );
 
   return {
     file: processedFile,
@@ -139,5 +193,6 @@ export async function processImageFile(
     width: options.width,
     height: options.height,
     format: options.outputFormat,
+    targetReached,
   };
 }

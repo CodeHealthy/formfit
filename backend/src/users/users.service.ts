@@ -15,6 +15,11 @@ type CreateUserInput = {
     passwordHash: string;
 };
 
+type UpdateBillingStateInput = {
+    plan?: UserDocument['plan'];
+    stripeCustomerId?: string | null;
+};
+
 @Injectable()
 export class UsersService {
     constructor(
@@ -54,6 +59,37 @@ export class UsersService {
         }
 
         return user;
+    }
+
+    async updateBillingState(
+        id: string,
+        input: UpdateBillingStateInput,
+    ): Promise<UserDocument> {
+        const update: Partial<Pick<User, 'plan' | 'stripeCustomerId'>> = {};
+
+        if (input.plan) {
+            update.plan = input.plan;
+        }
+
+        if (input.stripeCustomerId !== undefined) {
+            update.stripeCustomerId = input.stripeCustomerId ?? undefined;
+        }
+
+        const user = await this.userModel.findByIdAndUpdate(id, update, {
+            new: true,
+        });
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        return user;
+    }
+
+    async findByStripeCustomerId(
+        stripeCustomerId: string,
+    ): Promise<UserDocument | null> {
+        return this.userModel.findOne({ stripeCustomerId });
     }
 
     toResponse(user: UserDocument): UserResponseDto {

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { ImageFixer } from '@/features/image-fixer/components/image-fixer';
 
 export default function ImageFixerPage() {
@@ -5,6 +7,10 @@ export default function ImageFixerPage() {
         <main className="min-h-screen bg-slate-950 px-6 py-10 text-white">
             <div className="mx-auto max-w-6xl">
                 <div className="mb-10">
+                    <Link href="/" className="text-sm text-blue-400 hover:text-blue-300">
+                        Back home
+                    </Link>
+
                     <p className="mb-3 text-sm font-medium uppercase tracking-widest text-blue-400">
                         FormFit Tool
                     </p>

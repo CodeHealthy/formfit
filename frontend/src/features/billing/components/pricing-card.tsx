@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { createCheckoutSession } from '../api/billing.api';
 import { BillingPlan } from '../types/billing.types';
+import { getAccessToken } from '@/lib/auth-storage';
 
 type PricingCardProps = {
   plan: BillingPlan;
@@ -20,23 +22,27 @@ export function PricingCard({
   description,
   features,
 }: PricingCardProps) {
-  const [email, setEmail] = useState('');
+  const router = useRouter();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [error, setError] = useState('');
 
   async function handleCheckout() {
+    if (!getAccessToken()) {
+      router.push('/login');
+      return;
+    }
+
     try {
       setIsRedirecting(true);
       setError('');
 
       const data = await createCheckoutSession({
         plan,
-        customerEmail: email || undefined,
       });
 
       window.location.href = data.checkoutUrl;
     } catch {
-      setError('Could not start checkout. Please try again.');
+      setError('Could not start checkout. Please sign in and try again.');
       setIsRedirecting(false);
     }
   }
@@ -53,19 +59,6 @@ export function PricingCard({
           <li key={feature}>✓ {feature}</li>
         ))}
       </ul>
-
-      <label className="mt-6 block">
-        <span className="text-sm font-medium text-slate-300">
-          Email for checkout
-        </span>
-        <input
-          type="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="you@example.com"
-          className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none focus:border-blue-500"
-        />
-      </label>
 
       {error && <p className="mt-4 text-sm text-red-400">{error}</p>}
 

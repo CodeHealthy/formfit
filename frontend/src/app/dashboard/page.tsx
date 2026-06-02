@@ -6,19 +6,38 @@ import { useEffect, useState } from 'react';
 
 import { getMe } from '@/features/auth/api/auth.api';
 import type { AuthUser } from '@/features/auth/types/auth.types';
+import { createPortalSession } from '@/features/billing/api/billing.api';
+import { getMySubscription } from '@/features/subscriptions/api/subscriptions.api';
+import type { SubscriptionSummary } from '@/features/subscriptions/types/subscription.types';
+import { getImageFixUsageStatus } from '@/features/usage/api/usage.api';
+import type { UsageStatus } from '@/features/usage/types/usage.types';
+import { getAnonymousUsageId } from '@/features/usage/utils/anonymous-usage-id';
 import { clearAccessToken } from '@/lib/auth-storage';
 
 export default function DashboardPage() {
     const router = useRouter();
 
     const [user, setUser] = useState<AuthUser | null>(null);
+    const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
+    const [subscription, setSubscription] = useState<SubscriptionSummary | null>(
+        null,
+    );
     const [isLoading, setIsLoading] = useState(true);
+    const [isOpeningPortal, setIsOpeningPortal] = useState(false);
+    const [portalError, setPortalError] = useState('');
 
     useEffect(() => {
         async function loadUser() {
             try {
                 const currentUser = await getMe();
+                const [usageData, subscriptionData] = await Promise.all([
+                    getImageFixUsageStatus(getAnonymousUsageId()),
+                    getMySubscription(),
+                ]);
+
                 setUser(currentUser);
+                setUsageStatus(usageData);
+                setSubscription(subscriptionData.subscription);
             } catch {
                 clearAccessToken();
                 router.push('/login');
@@ -33,6 +52,19 @@ export default function DashboardPage() {
     function handleLogout() {
         clearAccessToken();
         router.push('/');
+    }
+
+    async function handleManageBilling() {
+        try {
+            setIsOpeningPortal(true);
+            setPortalError('');
+
+            const session = await createPortalSession();
+            window.location.href = session.portalUrl;
+        } catch {
+            setPortalError('Billing portal is available after a Pro checkout.');
+            setIsOpeningPortal(false);
+        }
     }
 
     if (isLoading) {
@@ -52,6 +84,10 @@ export default function DashboardPage() {
             <div className="mx-auto max-w-6xl">
                 <header className="flex flex-col justify-between gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center">
                     <div>
+                        <Link href="/" className="text-sm text-blue-400 hover:text-blue-300">
+                            Back home
+                        </Link>
+
                         <p className="text-sm font-medium uppercase tracking-[0.3em] text-blue-400">
                             Dashboard
                         </p>
@@ -87,32 +123,70 @@ export default function DashboardPage() {
                     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
                         <p className="text-sm text-slate-400">Daily image fixes</p>
                         <p className="mt-3 text-3xl font-bold">
-                            {user.plan === 'pro' ? '200' : '10'}
+                            {usageStatus
+                                ? `${usageStatus.usedToday}/${usageStatus.dailyLimit}`
+                                : user.plan === 'pro'
+                                    ? '0/200'
+                            : '0/10'}
                         </p>
+                        {usageStatus && (
+                            <p className="mt-2 text-sm text-slate-400">
+                                {usageStatus.remainingToday} remaining today
+                            </p>
+                        )}
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                        <p className="text-sm text-slate-400">Account email</p>
-                        <p className="mt-3 break-all text-lg font-semibold">
-                            {user.email}
+                        <p className="text-sm text-slate-400">Subscription</p>
+                        <p className="mt-3 text-3xl font-bold capitalize">
+                            {subscription?.status ?? 'None'}
                         </p>
+                        {subscription?.currentPeriodEnd && (
+                            <p className="mt-2 text-sm text-slate-400">
+                                Renews through {formatDate(subscription.currentPeriodEnd)}
+                            </p>
+                        )}
                     </div>
                 </section>
 
                 <section className="mt-8 rounded-3xl border border-white/10 bg-gradient-to-br from-blue-600/20 to-cyan-500/10 p-8">
-                    <h2 className="text-2xl font-bold">Next up: usage tracking</h2>
+                    <h2 className="text-2xl font-bold">Account status</h2>
                     <p className="mt-3 max-w-2xl text-slate-300">
-                        Your account is ready. The next feature will track daily fixes and
-                        connect Pro access to Stripe subscriptions.
+                        {subscription
+                            ? `Your Stripe subscription is ${subscription.status}.`
+                            : 'No active Stripe subscription is linked to this account yet.'}
                     </p>
+                    <p className="mt-2 break-all text-sm text-slate-400">
+                        {user.email}
+                    </p>
+                    {subscription?.cancelAtPeriodEnd && (
+                        <p className="mt-4 text-sm text-yellow-300">
+                            This subscription is scheduled to cancel at the end of the
+                            current billing period.
+                        </p>
+                    )}
+                    {portalError && (
+                        <p className="mt-4 text-sm text-red-300">{portalError}</p>
+                    )}
 
                     <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                        <Link
-                            href="/pricing"
-                            className="rounded-xl bg-white px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-slate-200"
-                        >
-                            View pricing
-                        </Link>
+                        {user.plan === 'pro' ? (
+                            <button
+                                type="button"
+                                onClick={handleManageBilling}
+                                disabled={isOpeningPortal}
+                                className="rounded-xl bg-white px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {isOpeningPortal ? 'Opening billing...' : 'Manage billing'}
+                            </button>
+                        ) : (
+                            <Link
+                                href="/pricing"
+                                className="rounded-xl bg-white px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-slate-200"
+                            >
+                                View pricing
+                            </Link>
+                        )}
 
                         <Link
                             href="/tools/image-fixer"
@@ -125,4 +199,12 @@ export default function DashboardPage() {
             </div>
         </main>
     );
+}
+
+function formatDate(value: string) {
+    return new Intl.DateTimeFormat('en', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    }).format(new Date(value));
 }

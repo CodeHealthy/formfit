@@ -6,11 +6,15 @@ import {
   HttpStatus,
   Post,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 
 import type { RawBodyRequest } from '@nestjs/common';
 import type { Request } from 'express';
 
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import type { JwtPayload } from '../auth/types/jwt-payload.type';
 import { BillingService } from './billing.service';
 import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
 
@@ -19,8 +23,18 @@ export class BillingController {
   constructor(private readonly billingService: BillingService) {}
 
   @Post('checkout/session')
-  createCheckoutSession(@Body() dto: CreateCheckoutSessionDto) {
-    return this.billingService.createCheckoutSession(dto);
+  @UseGuards(JwtAuthGuard)
+  createCheckoutSession(
+    @CurrentUser() user: JwtPayload,
+    @Body() dto: CreateCheckoutSessionDto,
+  ) {
+    return this.billingService.createCheckoutSession(user.sub, dto);
+  }
+
+  @Post('portal/session')
+  @UseGuards(JwtAuthGuard)
+  createPortalSession(@CurrentUser() user: JwtPayload) {
+    return this.billingService.createPortalSession(user.sub);
   }
 
   @Post('webhook')
