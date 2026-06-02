@@ -115,7 +115,8 @@ Prepare the EC2 instance before first deployment:
 
 ```bash
 sudo apt update
-sudo apt install -y nodejs npm nginx
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs nginx
 sudo npm install -g pm2
 mkdir -p /home/ubuntu/formfit-backend
 ```
