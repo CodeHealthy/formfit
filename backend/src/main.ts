@@ -15,7 +15,7 @@ async function bootstrap() {
   const port = configService.getOrThrow<number>('PORT');
 
   const frontendUrls = configService
-    .getOrThrow<string>('FRONTEND_URLS')
+    .getOrThrow<string>('FRONTEND_URL')
     .split(',')
     .map((url) => url.trim().replace(/\/$/, ''))
     .filter(Boolean);
