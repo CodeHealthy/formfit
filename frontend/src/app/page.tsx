@@ -6,31 +6,37 @@ const TOOLS = [
     href: '/tools/image-fixer',
     name: 'Image Form Fixer',
     description: 'Resize, compress, crop, and convert form images.',
+    access: 'Guest',
   },
   {
     href: '/tools/signature-resizer',
     name: 'Signature Resizer',
     description: 'Fit scanned signatures into strict upload boxes.',
+    access: 'Free account',
   },
   {
     href: '/tools/image-to-pdf',
     name: 'Image to PDF',
     description: 'Convert application images into one PDF.',
+    access: 'Free account',
   },
   {
     href: '/tools/pdf-compressor',
     name: 'PDF Optimizer',
     description: 'Re-save PDFs with browser-side optimization.',
+    access: 'Pro',
   },
   {
     href: '/tools/merge-pdf',
     name: 'Merge PDF',
     description: 'Combine multiple PDFs into one file.',
+    access: 'Pro',
   },
   {
     href: '/tools/split-pdf',
     name: 'Split PDF',
     description: 'Extract selected pages from a PDF.',
+    access: 'Pro',
   },
 ];
 
@@ -83,6 +89,12 @@ export default function Home() {
               className="rounded-lg border border-slate-700 px-6 py-3 font-medium text-slate-200 transition hover:bg-slate-900"
             >
               View limits and pricing
+            </Link>
+            <Link
+              href="/about"
+              className="rounded-lg px-6 py-3 font-medium text-slate-300 transition hover:text-white"
+            >
+              About FormFit
             </Link>
           </div>
 
@@ -156,7 +168,12 @@ export default function Home() {
                 href={tool.href}
                 className="rounded-xl border border-slate-800 bg-slate-900 p-5 transition hover:border-blue-500/60 hover:bg-slate-900/80"
               >
-                <h3 className="text-lg font-semibold">{tool.name}</h3>
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="text-lg font-semibold">{tool.name}</h3>
+                  <span className="shrink-0 rounded-full border border-slate-700 px-2.5 py-1 text-xs text-slate-300">
+                    {tool.access}
+                  </span>
+                </div>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
                   {tool.description}
                 </p>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { ToolAccessGuard } from '@/features/auth/components/tool-access-guard';
 import { PdfTool } from '@/features/pdf-tools/components/pdf-tool';
 
 export default function PdfCompressorPage() {
@@ -15,7 +16,9 @@ export default function PdfCompressorPage() {
           </p>
           <h1 className="text-4xl font-bold tracking-tight">PDF Optimizer</h1>
         </div>
-        <PdfTool mode="compress-pdf" />
+        <ToolAccessGuard requiredPlan="pro" toolName="PDF Optimizer">
+          <PdfTool mode="compress-pdf" />
+        </ToolAccessGuard>
       </div>
     </main>
   );

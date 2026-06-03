@@ -163,7 +163,7 @@ export function PdfTool({ mode }: PdfToolProps) {
           )}
 
           <p className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4 text-sm text-blue-100">
-            {copy.note}
+            {copy.note} Processing happens in your browser where supported.
           </p>
 
           {error && <p className="text-sm text-red-400">{error}</p>}

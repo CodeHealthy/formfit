@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { ToolAccessGuard } from '@/features/auth/components/tool-access-guard';
 import { ImageFixer } from '@/features/image-fixer/components/image-fixer';
 
 export default function SignatureResizerPage() {
@@ -25,18 +26,20 @@ export default function SignatureResizerPage() {
           </p>
         </div>
 
-        <ImageFixer
-          title="Signature requirement"
-          initialOptions={{
-            width: 300,
-            height: 100,
-            maxSizeKB: 50,
-            outputFormat: 'png',
-            fitMode: 'contain',
-            background: 'transparent',
-            filename: 'formfit-signature',
-          }}
-        />
+        <ToolAccessGuard toolName="Signature Resizer">
+          <ImageFixer
+            title="Signature requirement"
+            initialOptions={{
+              width: 300,
+              height: 100,
+              maxSizeKB: 50,
+              outputFormat: 'png',
+              fitMode: 'contain',
+              background: 'transparent',
+              filename: 'formfit-signature',
+            }}
+          />
+        </ToolAccessGuard>
       </div>
     </main>
   );

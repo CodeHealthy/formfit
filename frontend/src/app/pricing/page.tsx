@@ -36,9 +36,9 @@ export default function PricingPage() {
 
             <ul className="mt-6 space-y-3 text-sm text-slate-300">
               <li>✓ 3 guest fixes per day</li>
-              <li>✓ Basic image presets</li>
+              <li>✓ Basic image fixer access</li>
               <li>✓ Browser-side processing</li>
-              <li>✓ No account required</li>
+              <li>✓ No account required for the starter tool</li>
             </ul>
 
             <Link
@@ -56,14 +56,54 @@ export default function PricingPage() {
             description="For users who regularly fix application files."
             features={[
               'Higher daily limits',
-              'Batch processing later',
-              'Saved custom presets later',
-              'PDF tools later',
+              'Advanced PDF optimizer',
+              'Merge PDF and split PDF',
+              'Priority access to future tools',
               'Priority feature access',
             ]}
           />
         </div>
+
+        <section className="mt-10 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-xl font-semibold">Tool access by plan</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            <AccessColumn
+              title="Guest"
+              items={['Image Form Fixer', '3 image fixes per day']}
+            />
+            <AccessColumn
+              title="Free account"
+              items={[
+                'Signature Resizer',
+                'Image to PDF',
+                '10 image fixes per day',
+              ]}
+            />
+            <AccessColumn
+              title="Pro"
+              items={[
+                'PDF Optimizer',
+                'Merge PDF',
+                'Split PDF',
+                '200 image fixes per day',
+              ]}
+            />
+          </div>
+        </section>
       </div>
     </main>
+  );
+}
+
+function AccessColumn({ title, items }: { title: string; items: string[] }) {
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-950 p-5">
+      <h3 className="font-semibold text-white">{title}</h3>
+      <ul className="mt-4 space-y-2 text-sm text-slate-300">
+        {items.map((item) => (
+          <li key={item}>• {item}</li>
+        ))}
+      </ul>
+    </div>
   );
 }

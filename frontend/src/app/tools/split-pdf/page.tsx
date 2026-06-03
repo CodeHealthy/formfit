@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { ToolAccessGuard } from '@/features/auth/components/tool-access-guard';
 import { PdfTool } from '@/features/pdf-tools/components/pdf-tool';
 
 export default function SplitPdfPage() {
@@ -15,7 +16,9 @@ export default function SplitPdfPage() {
           </p>
           <h1 className="text-4xl font-bold tracking-tight">Split PDF</h1>
         </div>
-        <PdfTool mode="split-pdf" />
+        <ToolAccessGuard requiredPlan="pro" toolName="Split PDF">
+          <PdfTool mode="split-pdf" />
+        </ToolAccessGuard>
       </div>
     </main>
   );

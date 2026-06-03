@@ -193,6 +193,10 @@ export function ImageFixer({ initialOptions, title }: ImageFixerProps) {
         <p className="mt-2 text-sm text-slate-400">
           Choose a preset or enter custom dimensions and file size.
         </p>
+        <p className="mt-3 rounded-lg border border-blue-500/20 bg-blue-500/10 p-3 text-sm text-blue-100">
+          Your image is processed in your browser. FormFit only checks usage
+          limits before processing.
+        </p>
         {usageStatus && (
           <p className="mt-3 text-sm text-slate-300">
             {usageStatus.remainingToday} of {usageStatus.dailyLimit} fixes
