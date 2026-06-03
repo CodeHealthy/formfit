@@ -1,25 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const STACK = [
-  'TypeScript',
-  'React',
-  'Next.js',
-  'NestJS',
-  'MongoDB Atlas',
-  'Stripe',
-  'AWS EC2',
-  'API Gateway',
-  'Vercel',
-  'GitHub Actions',
-];
 
-const EXPERIENCE = [
-  'Software Developer at Workstream Automation Ltd.',
-  'MS Data Science student at NED University of Engineering and Technology',
-  'BS Computer Science graduate from Muhammad Ali Jinnah University',
-  'Builder of SkillSync, a multi-tenant assessment and skill-validation platform',
-];
 
 export default function AboutPage() {
   return (
@@ -110,30 +92,7 @@ export default function AboutPage() {
               <InfoCard label="Business model" value="Guest, Free, Pro" />
             </div>
 
-            <div className="mt-10 grid gap-6 lg:grid-cols-2">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-                <h3 className="text-xl font-semibold">Experience behind it</h3>
-                <ul className="mt-5 space-y-3 text-sm leading-6 text-slate-300">
-                  {EXPERIENCE.map((item) => (
-                    <li key={item}>• {item}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-                <h3 className="text-xl font-semibold">Product engineering stack</h3>
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {STACK.map((item) => (
-                    <span
-                      key={item}
-                      className="rounded-full border border-slate-700 px-3 py-1 text-sm text-slate-300"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+            
           </section>
         </section>
       </div>

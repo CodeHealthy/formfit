@@ -1,44 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const TOOLS = [
-  {
-    href: '/tools/image-fixer',
-    name: 'Image Form Fixer',
-    description: 'Resize, compress, crop, and convert form images.',
-    access: 'Guest',
-  },
-  {
-    href: '/tools/signature-resizer',
-    name: 'Signature Resizer',
-    description: 'Fit scanned signatures into strict upload boxes.',
-    access: 'Free account',
-  },
-  {
-    href: '/tools/image-to-pdf',
-    name: 'Image to PDF',
-    description: 'Convert application images into one PDF.',
-    access: 'Free account',
-  },
-  {
-    href: '/tools/pdf-compressor',
-    name: 'PDF Optimizer',
-    description: 'Re-save PDFs with browser-side optimization.',
-    access: 'Pro',
-  },
-  {
-    href: '/tools/merge-pdf',
-    name: 'Merge PDF',
-    description: 'Combine multiple PDFs into one file.',
-    access: 'Pro',
-  },
-  {
-    href: '/tools/split-pdf',
-    name: 'Split PDF',
-    description: 'Extract selected pages from a PDF.',
-    access: 'Pro',
-  },
-];
+import { HomeAccountLink } from '@/features/auth/components/home-account-link';
+import {
+  getToolAccessLabel,
+  TOOL_CATALOG,
+} from '@/features/tools/constants/tool-catalog';
 
 export default function Home() {
   return (
@@ -76,26 +43,26 @@ export default function Home() {
             and government uploads.
           </p>
 
-          <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               href="/tools/image-fixer"
-              className="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-500"
+              className="inline-flex h-12 items-center justify-center rounded-lg bg-blue-600 px-6 text-sm font-semibold text-white transition hover:bg-blue-500"
             >
               Try Image Fixer
             </Link>
 
             <Link
               href="/pricing"
-              className="rounded-lg border border-slate-700 px-6 py-3 font-medium text-slate-200 transition hover:bg-slate-900"
+              className="inline-flex h-12 items-center justify-center rounded-lg border border-slate-700 px-6 text-sm font-semibold text-slate-200 transition hover:bg-slate-900"
             >
-              View limits and pricing
+              View Pricing
             </Link>
-            <Link
-              href="/about"
-              className="rounded-lg px-6 py-3 font-medium text-slate-300 transition hover:text-white"
-            >
-              About FormFit
-            </Link>
+            <div className="flex h-12 items-center gap-5 px-1 text-sm font-medium text-slate-400">
+              <Link href="/about" className="transition hover:text-white">
+                About
+              </Link>
+              <HomeAccountLink />
+            </div>
           </div>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
@@ -162,7 +129,7 @@ export default function Home() {
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {TOOLS.map((tool) => (
+            {TOOL_CATALOG.map((tool) => (
               <Link
                 key={tool.href}
                 href={tool.href}
@@ -171,7 +138,7 @@ export default function Home() {
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-lg font-semibold">{tool.name}</h3>
                   <span className="shrink-0 rounded-full border border-slate-700 px-2.5 py-1 text-xs text-slate-300">
-                    {tool.access}
+                    {getToolAccessLabel(tool.access)}
                   </span>
                 </div>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
